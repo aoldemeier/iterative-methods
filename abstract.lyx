@@ -1,0 +1,438 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language ngerman
+\language_package babel
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command bibtex
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2cm
+\rightmargin 2.5cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language german
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Jacobi, Gauß-Seidel und SOR
+\end_layout
+
+\begin_layout Author
+Alexander Oldemeier
+\end_layout
+
+\begin_layout Standard
+Das 
+\emph on
+Jacobi-
+\emph default
+, das 
+\emph on
+Gauß-Seidel-
+\emph default
+ und das 
+\emph on
+SOR-Verfahren
+\emph default
+ sind iterative Verfahren zur zahlenmäßigen Behandlung von linearen Gleichungssy
+stemen (LGS) der Form 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+, mit 
+\begin_inset Formula $A\in\mathbb{C}^{n\times n}$
+\end_inset
+
+, 
+\begin_inset Formula $A$
+\end_inset
+
+ regulär, 
+\begin_inset Formula $b\in\mathbb{C}^{n}$
+\end_inset
+
+.
+ Im Gegensatz zu den sogenannten 
+\emph on
+direkten
+\emph default
+ Verfahren, die bei exakter Rechnung die Lösung eines (eindeutig lösbaren)
+ LGS in endlich vielen Schritten liefern (ein Beispiel wäre die Gauß-Elimination
+), arbeiten 
+\emph on
+iterative
+\emph default
+ Verfahren mit einer Iterationsvorschrift, die unter gewissen Bedingungen
+ an die Aufgabe lediglich gegen die Lösung konvergiert.
+\end_layout
+
+\begin_layout Standard
+Die hier behandelten iterativen Verfahren gehören zu den sogenannten 
+\emph on
+Splitting-Verfahren
+\emph default
+.
+ Diese versuchen das LGS durch Wahl einer geeigneten regulären Matrix 
+\begin_inset Formula $B$
+\end_inset
+
+ und der Fixpunktiteration 
+\begin_inset Formula 
+\[
+x^{k+1}:=(I-B^{-1}A)x^{k}+B^{-1}b,\:k\in\mathbb{N}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+zu lösen.
+ Die Bezeichnung 
+\begin_inset Quotes gld
+\end_inset
+
+Splitting-Verfahren
+\begin_inset Quotes grd
+\end_inset
+
+ kommt daher, dass 
+\begin_inset Formula $B$
+\end_inset
+
+ die Matrix 
+\begin_inset Formula $A$
+\end_inset
+
+ in die Anteile 
+\begin_inset Formula $B$
+\end_inset
+
+ und 
+\begin_inset Formula $A-B$
+\end_inset
+
+ aufteilt und damit die Herleitung obiger Fixpunktiteration erlaubt.
+ Die Matrix 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $M:=(I-B^{-1}A)$
+\end_inset
+
+ heißt Iterationsmatrix.
+ Das Verfahren konvergiert
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ genau dann, wenn 
+\begin_inset Formula $\rho\left(M\right)<1$
+\end_inset
+
+ ist und umso schneller, je kleiner 
+\begin_inset Formula $\rho\left(M\right)$
+\end_inset
+
+ ist, wobei 
+\begin_inset Formula $\rho\left(M\right)$
+\end_inset
+
+ den Spektralradius von 
+\begin_inset Formula $M$
+\end_inset
+
+ bezeichnet (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.
+ 137f).
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Man bricht ab, sobald die gewünschte Genauigkeit erreicht ist.
+\end_layout
+
+\begin_layout Standard
+Die zu behandelnden Verfahren unterscheiden sich durch die Wahl von 
+\begin_inset Formula $B$
+\end_inset
+
+.
+ Interessant sind die sich jeweils ergebenden speziellen Konvergenzbedingungen
+ und Konvergenzgeschwindigkeiten.
+\end_layout
+
+\begin_layout Standard
+Das einfachste Verfahren ist das Jacobi-Verfahren.
+ Hier teilt man 
+\begin_inset Formula $A$
+\end_inset
+
+ auf in eine Diagonalmatrix 
+\begin_inset Formula $D$
+\end_inset
+
+, eine strikte untere Dreiecksmatrix 
+\begin_inset Formula $L$
+\end_inset
+
+ und eine strikte obere Dreiecksmatrix 
+\begin_inset Formula $R$
+\end_inset
+
+ (
+\begin_inset Formula $A=D-L-R$
+\end_inset
+
+).
+ Die sich durch die Wahl 
+\begin_inset Formula $B:=D$
+\end_inset
+
+ ergebende Iterationsvorschrift konvergiert für jede irreduzibel diagonaldominan
+te Matrix 
+\begin_inset Formula $A\in\mathbb{R}^{n\times n}$
+\end_inset
+
+(
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.
+ 144).
+ Das Verfahren heißt auch 
+\emph on
+Gesamtschrittverfahren
+\emph default
+, weil jede Komponente 
+\begin_inset Formula $x_{i}^{k+1},\,i\in\{1,...,n\}$
+\end_inset
+
+ des Ergebnisses eines Iterationsschritts unabhängig von den anderen Komponenten
+ des Ergebnisses berechnet werden kann.
+ Damit eignet sich das Verfahren für den Einsatz auf Parallelrechnern.
+\end_layout
+
+\begin_layout Standard
+Das Gauß-Seidel-Verfahren oder 
+\emph on
+Einzelschrittverfahren
+\emph default
+ hat diese Eigenschaft nicht.
+ Ausgehend von der selben Zerlegung von 
+\begin_inset Formula $A$
+\end_inset
+
+ wird durch die Wahl 
+\begin_inset Formula $B:=D-L$
+\end_inset
+
+ eine andere Berechnungsvorschrift hergeleitet, die ebenfalls für jede irreduzib
+el diagonaldominante Matrix 
+\begin_inset Formula $A\in\mathbb{R}^{n\times n}$
+\end_inset
+
+ konvergiert (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.
+ 147).
+\end_layout
+
+\begin_layout Standard
+Beim SOR-Verfahren (
+\emph on
+Successive Over-Relaxation
+\emph default
+) wird das Gauß-Seidel-Verfahren durch einen Relaxationsparameter 
+\begin_inset Formula $\omega$
+\end_inset
+
+ und die Wahl 
+\begin_inset Formula $B:=\frac{1}{\omega}\left(D-L\right)$
+\end_inset
+
+ verallgemeinert.
+ Für 
+\begin_inset Formula $\omega\in(0,2)$
+\end_inset
+
+ kann man zeigen, dass das Verfahren für jede symmetrische positiv definite
+ Matrix 
+\begin_inset Formula $A\in\mathbb{R}^{n\times n}$
+\end_inset
+
+ konvergiert (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.152).
+ Die Wahl von 
+\begin_inset Formula $\omega$
+\end_inset
+
+ beeinflusst die Konvergenzgeschwindigkeit.
+ Mit Hilfe der Theorie der Tschebyscheff-Polynome kann man eine Variante
+ des SOR-Verfahrens — das SSOR-Verfahren — noch einmal wesentlich beschleunigen.
+\end_layout
+
+\begin_layout Standard
+Hinsichtlich der Konvergenzgeschwindigkeit verhält sich das SOR-Verfahren
+ besser als das Einzelschritt
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+"-
+\end_layout
+
+\end_inset
+
+verfahren, was wiederum schneller als das Gesamtschrittverfahren ist.
+ Am schnellsten ist das SSOR-Verfahren mit Tschebyscheff-Beschleunigung
+ (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, 4.8).
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand nocite
+key "H-B09,Kan05,DH08"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "math_lit"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

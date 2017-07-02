@@ -1,0 +1,2663 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{amsthm}
+\newtheorem{theorem}{Satz}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Beispiel}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Korollar}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language ngerman
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2cm
+\rightmargin 2.5cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language german
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Jacobi, Gauß-Seidel und SOR
+\end_layout
+
+\begin_layout Author
+Alexander Oldemeier
+\end_layout
+
+\begin_layout Abstract
+Ich untersuche so genannte Fixpunktverfahren zur Bestimmung der Lösung linearer
+ Gleichungssysteme.
+ Motiviert durch eine Fixpunktdarstellung der Aufgabe führe ich das Splitting-Ve
+rfahren ein und diskutiere und beweise allgemeine Resultate über die Konvergenz
+ des Verfahrens.
+ Ich stelle dann das Jacobi- und das Gauß-Seidel-Verfahren vor, beweise
+ je ein Resultat über deren Konvergenz und betrachte kurz die parametrisierte
+ Variante SOR.
+ Die Frage nach weiterer Konvergenzverbesserung führt schließlich zur Tschebysch
+eff-Beschleunigung.
+ Zuletzt visualisiere ich die vorgestellten Verfahren anhand einer Implementieru
+ng und vergleiche sie.
+\end_layout
+
+\begin_layout Section
+Problemstellung
+\end_layout
+
+\begin_layout Standard
+Im Folgenden geht es um Verfahren zur zahlenmäßigen Bestimmung der Lösung
+ von eindeutig lösbaren linearen Gleichungssystemen (LGS) der Form
+\begin_inset Formula 
+\begin{equation}
+Ax=b,\:A\in\mathbb{R}^{n\times n},\:x\in\mathbb{R}^{n},\:a\in\mathbb{R}^{n},\:n\in\mathbb{N}\label{LGS}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Aufgabe (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "LGS"
+
+\end_inset
+
+) ist genau dann eindeutig lösbar, wenn 
+\begin_inset Formula $A$
+\end_inset
+
+ invertierbar ist, was ich im Folgenden voraussetze.
+ Ein geeignetes Verfahren sollte als Algorithmus betrachtet eine möglichst
+ geringe Anzahl von Rechenschritten bis zum Erreichen einer Lösung mit hinreiche
+nder Genauigkeit benötigen.
+ Es ist zu erwarten, dass man zur Effizienzsteigerung von Verfahren zusätzliche
+ Informationen über die Struktur der Matrix 
+\begin_inset Formula $A$
+\end_inset
+
+ haben muss.
+ Es ist außerdem zu erwarten, dass Verfahren nur für gewisse Klassen von
+ Matrizen überhaupt anwendbar sind (da aber vielleicht besonders gut).
+ Diese Eigenschaften der Verfahren gilt es zu bestimmen um am Ende das richtige
+ Verfahren für eine konkrete numerische Aufgabe zu finden.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Weitere Kriterien sind wichtig, wie zum Beispiel die numerische Stabilität
+ der entstehenden Algorithmen, die ich in dieser Arbeit aber nicht behandeln
+ kann.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Das Splitting-Verfahren
+\end_layout
+
+\begin_layout Standard
+Sei 
+\begin_inset Formula $A$
+\end_inset
+
+ wie oben.
+ Für jede invertierbare Matrix 
+\begin_inset Formula $B\in\mathbb{R}^{n\times n}$
+\end_inset
+
+ und alle 
+\begin_inset Formula $x\in\mathbb{R}^{n}$
+\end_inset
+
+ gilt dann 
+\begin_inset Formula 
+\[
+Ax=Ax+Bx-Bx=Bx+(Ax-Bx)\overset{\left(*\right)}{=}Bx+(A-B)x
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Daraus folgt
+\begin_inset Formula 
+\[
+Ax=b\iff Bx+(A-B)x=b\iff Bx=b-\left(A-B\right)x\iff
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\iff B^{-1}Bx=B^{-1}\left(b-\left(A-B\right)x\right)\iff x=B^{-1}\left(B-A\right)x+B^{-1}b\iff x=\left(I_{n}-B^{-1}A\right)x+B^{-1}b
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Man erhält also (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "LGS"
+
+\end_inset
+
+) in Form einer 
+\emph on
+Fixpunktgleichung
+\emph default
+.
+ Setzt man 
+\begin_inset Formula $M:=\left(I_{n}-B^{-1}A\right)$
+\end_inset
+
+ und 
+\begin_inset Formula $c:=B^{-1}b$
+\end_inset
+
+ kann man damit die folgende 
+\emph on
+Fixpunktiteration
+\emph default
+ aufstellen:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x_{k+1}:=Mx_{k}+c\label{FixedPointForm}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ein numerisches Verfahren, das auf (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+) basiert, wird 
+\emph on
+Splitting-Verfahren
+\emph default
+ genannt, da es auf einer Aufteilung (Split) von 
+\begin_inset Formula $A$
+\end_inset
+
+ in die Teile 
+\begin_inset Formula $B$
+\end_inset
+
+ und 
+\begin_inset Formula $A-B$
+\end_inset
+
+ basiert.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Siehe Schritt 
+\begin_inset Formula $\left(*\right)$
+\end_inset
+
+ oben.
+ Der konkrete Ablauf des Splits wird noch klarer in Abschnitt 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Herleitung-Jacobi-split"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ Die Matrix 
+\begin_inset Formula $M$
+\end_inset
+
+ heißt 
+\emph on
+Iterationsmatrix
+\emph default
+.
+ Splitting-Verfahren sind Beispiele für 
+\emph on
+iterative Verfahren
+\emph default
+.
+ Im Gegensatz zu so genannten 
+\emph on
+direkten
+\emph default
+ Verfahren, die bei perfekter Rechengenauigkeit die Aufgabe in endlich vielen
+ Schritten lösen, wie zum Beispiel die Gauß-Elimination, konvergieren iterative
+ Verfahren lediglich gegen die Lösung.
+\end_layout
+
+\begin_layout Standard
+Hier untersuche ich eine Reihe von solchen Splitting-Verfahren.
+ Sie unterscheiden sich in der Wahl von 
+\begin_inset Formula $B$
+\end_inset
+
+ (und damit in der Wahl von 
+\begin_inset Formula $M$
+\end_inset
+
+ und 
+\begin_inset Formula $c$
+\end_inset
+
+).
+ Natürlich wird ein solches Verfahren nicht immer konvergieren.
+ Es ist also wichtig, die Bedingungen für Konvergenz zu finden, um die potentiel
+len Einsatzgebiete für unsere Verfahren zu identifizieren.
+ Außerdem interessiert uns die Konvergenzgeschwindigkeit, also wie schnell
+ sich die Iterierten der Lösung annähern.
+ Hiermit können wir dann idealerweise die Anzahl der Rechenschritte bestimmen,
+ die nötig sind, um mit einer Implementierung in akzeptabler Zeit zu einer
+ akzeptablen Näherung der Lösung zu kommen.
+ Bevor ich zu den speziellen Splitting-Verfahren komme, stelle ich ein paar
+ allgemeine Resultate vor, die später nützlich sein werden.
+\end_layout
+
+\begin_layout Subsection
+Allgemeine Konvergenzbedingungen
+\end_layout
+
+\begin_layout Standard
+Sei 
+\begin_inset Formula $\rho\left(X\right)$
+\end_inset
+
+ der Spektralradius von 
+\begin_inset Formula $X$
+\end_inset
+
+, also der Betrag des betragsmäßig größten Eigenwerts von 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ Dann gilt
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{theorem}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "spectral-radius-theorem"
+
+\end_inset
+
+Das Fixpunktverfahren oben konvergiert genau dann wenn 
+\begin_inset Formula $\rho\left(M\right)<1$
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{theorem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dieses Resultat lässt sich direkt beweisen (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.135ff).
+ Die hinreichende Bedingung für Konvergenz lässt sich aber auch als direkte
+ Konsequenz eines Spezialfalls des Banachschen Fixpunktsatzes zeigen.
+ Der Banachsche Fixpunktsatz ist folgendes bekannte Resultat aus der Analysis:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{theorem}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "banach-fix-point-theorem"
+
+\end_inset
+
+Sei 
+\begin_inset Formula $\left(\mathcal{K},\parallel.\parallel\right)$
+\end_inset
+
+ ein vollständiger metrischer Raum und 
+\begin_inset Formula $\Phi:\mathcal{K\rightarrow K}$
+\end_inset
+
+ eine 
+\emph on
+Kontraktion
+\emph default
+, d.h.
+ eine Abbildung, die für ein 
+\begin_inset Formula $q<1,q\in\mathbb{R}$
+\end_inset
+
+ die Eigenschaft 
+\begin_inset Formula 
+\[
+\parallel\Phi\left(x\right)-\Phi\left(z\right)\parallel\:\leq q\parallel x-z\parallel\forall x,z\in\mathcal{K}
+\]
+
+\end_inset
+
+ erfüllt.
+ Dann hat die 
+\emph on
+Fixpunktgleichung
+\emph default
+ 
+\begin_inset Formula $x=\Phi\left(x\right)$
+\end_inset
+
+ genau eine Lösung 
+\begin_inset Formula $\hat{x}\in\mathcal{K}$
+\end_inset
+
+ und für die Fixpunktiteration 
+\begin_inset Formula $x_{k+1}:=\Phi\left(x_{k}\right)$
+\end_inset
+
+ gilt 
+\begin_inset Formula $\underset{k\to\infty}{lim}x_{k}=\hat{x}$
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{theorem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Eine Instanz für Matrizen ergibt sich daraus als Korollar:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{corollary}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "matrix-contraction-by-matrix-norm"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Sei 
+\begin_inset Formula $\interleave.\interleave$
+\end_inset
+
+ eine Matrixnorm in 
+\begin_inset Formula $\mathbb{R}^{n\times n}$
+\end_inset
+
+, die mit einer Vektornorm 
+\begin_inset Formula $\Vert.\Vert$
+\end_inset
+
+ verträglich ist.
+ Die Fixpunktiteration (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+) konvergiert gegen 
+\begin_inset Formula $\hat{x}=A^{-1}b$
+\end_inset
+
+, wenn 
+\begin_inset Formula $\interleave M\interleave<1$
+\end_inset
+
+.
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{corollary}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}
+\end_layout
+
+\end_inset
+
+Setze 
+\begin_inset Formula $\Phi\left(x\right):=Mx+c$
+\end_inset
+
+.
+ Damit gilt: 
+\begin_inset Formula 
+\[
+\left\Vert \Phi\left(x\right)-\Phi\left(z\right)\right\Vert =\left\Vert Mx+c-\left(Mz+c\right)\right\Vert =\left\Vert Mx-Mz\right\Vert =
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+=\left\Vert M\left(x-z\right)\right\Vert \leq\interleave M\interleave\Vert x-z\Vert
+\]
+
+\end_inset
+
+Setze 
+\begin_inset Formula $q:=\interleave M\interleave$
+\end_inset
+
+.
+ Wegen 
+\begin_inset Formula $q<1$
+\end_inset
+
+ ist 
+\begin_inset Formula $\Phi$
+\end_inset
+
+ eine Kontraktion in 
+\begin_inset Formula $\left(\mathbb{R}^{n},\Vert.\Vert\right)$
+\end_inset
+
+.
+ Also gilt für die Fixpunktiteration (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+), dass 
+\begin_inset Formula $\lim_{k\to\infty}x_{k}=\hat{x}$
+\end_inset
+
+, wobei 
+\begin_inset Formula $\hat{x}=M\hat{x}+c$
+\end_inset
+
+.
+ Das gilt aber genau dann, wenn 
+\begin_inset Formula $A\hat{x}=b$
+\end_inset
+
+.
+ Also ist 
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+ die Lösung des LGS und die Fixpunktiteration konvergiert gegen diese.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hiermit kann man nun die hinreichende Bedingung von Satz 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "spectral-radius-theorem"
+
+\end_inset
+
+ zeigen:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}[Beweis (Satz 
+\backslash
+ref{spectral-radius-theorem}, hinreichende Bedingung)]
+\end_layout
+
+\end_inset
+
+Für die Fixpunktiteration wie oben gelte 
+\begin_inset Formula $\rho\left(M\right)<1$
+\end_inset
+
+.
+ Dann gibt es ein 
+\begin_inset Formula $\epsilon>0$
+\end_inset
+
+ mit 
+\begin_inset Formula $\rho\left(M\right)+\epsilon<1$
+\end_inset
+
+.
+ Sei 
+\begin_inset Formula $J_{A}=S^{-1}AS$
+\end_inset
+
+ die Jordansche Normalform von 
+\begin_inset Formula $M$
+\end_inset
+
+.
+ Hiermit lässt sich die Vektornorm 
+\begin_inset Formula $\Vert x\Vert_{\epsilon}:=\Vert\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}$
+\end_inset
+
+ definieren mit 
+\begin_inset Formula $D_{\epsilon}:=diag\left(1,\epsilon,\epsilon^{2},...,\epsilon^{n-1}\right)$
+\end_inset
+
+.
+ Für die von dieser Vektornorm induzierte Matrixnorm 
+\begin_inset Formula $\interleave M\interleave_{\epsilon}$
+\end_inset
+
+ gilt dann: 
+\begin_inset Formula 
+\[
+\interleave M\interleave_{\epsilon}=\underset{x\neq0}{max}\frac{\Vert Ax\Vert_{\epsilon}}{\Vert x\Vert_{\epsilon}}=\underset{x\neq0}{max}\frac{\Vert\left(SD_{\epsilon}\right)^{-1}Ax\Vert_{\infty}}{\Vert\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}}=
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+=\underset{x\neq0}{max}\frac{\Vert\left(SD_{\epsilon}\right)^{-1}A\left(SD_{\epsilon}\right)\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}}{\Vert\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}}=\underset{x\neq0}{max}\Vert\left(SD_{\epsilon}\right)^{-1}A\left(SD_{\epsilon}\right)\Vert_{\infty}=
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+=\Vert\left(SD_{\epsilon}\right)^{-1}A\left(SD_{\epsilon}\right)\Vert_{\infty}=\Vert D_{\epsilon}^{-1}S^{-1}ASD_{\epsilon}\Vert_{\infty}=\Vert D_{\epsilon}^{-1}J_{A}D_{\epsilon}\Vert_{\infty}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Nun kann man sehen, dass sich 
+\begin_inset Formula $D_{\epsilon}^{-1}J_{A}D_{\epsilon}$
+\end_inset
+
+ von der eigentlichen Blockdiagonalmatrix 
+\begin_inset Formula $J_{A}$
+\end_inset
+
+ nur so unterscheidet, dass die Einsen überhalb der Diagonale der Joranblöcke
+ durch 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ ersetzt sind.
+ Damit ist die Summe der Einträge einer Zeile von 
+\begin_inset Formula $J_{A}$
+\end_inset
+
+ entweder 
+\begin_inset Formula $\lambda_{i}$
+\end_inset
+
+, wobei 
+\begin_inset Formula $i$
+\end_inset
+
+ der Index des Jordanblocks ist, der zu dieser Zeile gehört, oder 
+\begin_inset Formula $\lambda_{i}+\epsilon$
+\end_inset
+
+.
+ Also gilt:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\interleave M\interleave_{\epsilon}=\Vert D_{\epsilon}^{-1}J_{A}D_{\epsilon}\Vert_{\infty}\leq\underset{}{max}|\lambda_{i}|+\epsilon=\rho\left(A\right)+\epsilon<1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\interleave.\interleave_{\epsilon}$
+\end_inset
+
+ ist mit 
+\begin_inset Formula $\Vert.\Vert_{\epsilon}$
+\end_inset
+
+ verträglich, da erstere von letzterer induziert ist.
+ Mit Korollar 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "matrix-contraction-by-matrix-norm"
+
+\end_inset
+
+ folgt die Behauptung.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Allgemeine Konvergenzgeschwindigkeit
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Allgemeine-Konvergenzgeschwindig"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Man kann zeigen, dass auch die Konvergenzgeschwindigkeit vom Spektralradius
+ abhängt:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{theorem}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fix-point-iteration-convergence-speed"
+
+\end_inset
+
+Für das Verfahren (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+) mit Iterationsmatrix 
+\begin_inset Formula $M$
+\end_inset
+
+, 
+\begin_inset Formula $\rho\left(M\right)<1$
+\end_inset
+
+ und Lösung 
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+ gilt: 
+\begin_inset Formula 
+\[
+\rho\left(M\right)=\alpha:=\underset{x_{0}\neq\hat{x}}{\sup}\underset{k\rightarrow\infty}{\limsup}\left(\Vert x^{k}-\hat{x}\Vert\right)^{\frac{1}{k}}
+\]
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{theorem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Im Falle von Konvergenz ist diese also umso schneller, desto kleiner der
+ Spektralradius der Iterationsmatrix ist.
+ Auf einen Beweis soll hier aus Platzgründen verzichtet werden.
+ Ich verweise auf (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.
+ 138) und (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "H-B09"
+
+\end_inset
+
+, S.
+ 76f).
+ 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ heißt auch 
+\emph on
+asymptotische Konvergenzrate
+\emph default
+.
+ Wichtig zu erwähnen ist, dass die asymptotische Geschwindigkeit nicht unbedingt
+ geeignet ist, um die gewünschte Aussage über die Anzahl der benötigten
+ Iterationen bis zum Erreichen der gewünschten Genauigkeit zu treffen.
+ Es gibt 
+\begin_inset Quotes gld
+\end_inset
+
+ungünstige
+\begin_inset Quotes grd
+\end_inset
+
+ Iterationsmatrizen, bei denen die Fixpunktiteration in den ersten 
+\begin_inset Formula $n$
+\end_inset
+
+ Schritten den Fehler 
+\begin_inset Formula $e^{k}:=\Vert x^{k}-\hat{x}\Vert$
+\end_inset
+
+ überhaupt nicht reduziert (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "H-B09"
+
+\end_inset
+
+, S.77).
+ Man kann lediglich eine 
+\begin_inset Quotes gld
+\end_inset
+
+Faustregel
+\begin_inset Quotes grd
+\end_inset
+
+ aufstellen, wenn man sich der Ausnahmen bewusst ist: Setzt man 
+\begin_inset Formula $a:=-log_{10}\left(\alpha\right)$
+\end_inset
+
+ lautet diese, dass man 
+\begin_inset Formula $\frac{1}{a}$
+\end_inset
+
+ Iterationsschritte erwarten kann, um den Fehler um eine weitere Dezimalstelle
+ zu reduzieren (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "H-B09"
+
+\end_inset
+
+, S.77).
+\end_layout
+
+\begin_layout Section
+Jacobi, Gauß-Seidel und SOR
+\end_layout
+
+\begin_layout Standard
+Die speziellen Verfahren, die auf die allgemeine Form (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+) zurückgeführt werden können, kann man auf zwei Arten und Weisen erhalten.
+ Zum einen durch eine komponentenweise Herleitung einer Fixpunktform der
+ Aufgabe (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "LGS"
+
+\end_inset
+
+).
+ Zum anderen aber durch die Überlegung, was für Matrizen als Wahl von 
+\begin_inset Formula $B$
+\end_inset
+
+ geeignet sein könnten.
+\end_layout
+
+\begin_layout Subsection
+Das Jacobi-Verfahren
+\end_layout
+
+\begin_layout Subsubsection
+Herleitung über die Wahl einer invertierbaren Splitting-Matrix
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Herleitung-Jacobi-split"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Das Fixpunktverfahren (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+) erfordert die Invertierbarkeit und, für das Ausführen des Verfahrens,
+ die Invertierung der Splitting-Matrix 
+\begin_inset Formula $B$
+\end_inset
+
+.
+ Eine Klasse von Matrizen, die sehr einfach zu invertieren ist (da sie lediglich
+ das Invertieren der von Null verschiedenen Komponenten der Matrix erfordert)
+ sind Diagonalmatrizen (ohne verschwindende Diagonalelemente).
+ Das motiviert dazu, als Splitting-Matrix 
+\begin_inset Formula $B$
+\end_inset
+
+ eine Diagonalmatrix zu wählen.
+ Naheliegend ist es dann, als Diagonalmatrix einfach die Diagonale von 
+\begin_inset Formula $A$
+\end_inset
+
+ selbst zu nehmen.
+ Man splittet also die Matrix 
+\begin_inset Formula $A$
+\end_inset
+
+ auf in eine Diagonalmatrix 
+\begin_inset Formula $D$
+\end_inset
+
+ und einen Restanteil mit verschwindender Diagonale, den man wiederum als
+ zusammengesetzt aus einer strikten unteren Dreiecksmatrix und einer strikten
+ unteren Dreiecksmatrix betrachten kann.
+ Etwas visueller:
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Man mag sich fragen, warum hier anstatt einer Summe von Einträgen von 
+\begin_inset Formula $A$
+\end_inset
+
+ eine Differenz von negierten Einträgen gewählt wird.
+ Grund ist, dass die Iterationsmatrix dann etwas schöner aussieht.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+A=\underset{:=D}{\begin{pmatrix}a_{11} & 0 & \ldots & 0\\
+0 & \ddots & 0 & \vdots\\
+\vdots & 0 & \ddots & \vdots\\
+0 & \cdots & \cdots & a_{nn}
+\end{pmatrix}}-\underset{:=L}{\begin{pmatrix}0 & 0 & \ldots & 0\\
+-a_{21} & \ddots & 0 & \vdots\\
+\vdots & \ddots & \ddots & \vdots\\
+-a_{n1} & -a_{n2} & \cdots & 0
+\end{pmatrix}}-\underset{:=R}{\begin{pmatrix}-a_{11} & -a_{12} & \ldots- & a_{1n}\\
+0 & \ddots & \ddots & -a_{2n}\\
+\vdots & 0 & \ddots & \vdots\\
+0 & \cdots & \cdots & 0
+\end{pmatrix}}\label{eq:standard-split}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Matrix wird also aufgesplittet in die Anteile 
+\begin_inset Formula $B=D$
+\end_inset
+
+ und 
+\begin_inset Formula $A-B=D-L-R-D=-\left(L+R\right)$
+\end_inset
+
+.
+ Nun erinnern wir uns an die Fixpunktform (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+) 
+\begin_inset Formula $x_{k+1}:=Mx_{k}+c$
+\end_inset
+
+, wobei wir 
+\begin_inset Formula $M:=\left(I_{n}-B^{-1}A\right)$
+\end_inset
+
+ und 
+\begin_inset Formula $c:=B^{-1}b$
+\end_inset
+
+ setzen und erhalten durch Einsetzen
+\begin_inset Formula 
+\[
+M:=I_{n}-D^{-1}\left(D-\left(L+R\right)\right)=I_{n}-I_{n}+D^{-1}\left(L+R\right)=D^{-1}\left(L+R\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+sowie 
+\begin_inset Formula $c=D^{-1}b$
+\end_inset
+
+, und damit die folgende Fixpunktiteration, die 
+\emph on
+Jacobi-Verfahren
+\emph default
+ genannt wird: 
+\begin_inset Formula 
+\begin{equation}
+x_{k+1}:=\underset{:=M_{J}}{D^{-1}\left(L+R\right)x_{k}}+\underset{:=c_{J}}{D^{-1}b}\label{eq:jacobi-method}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Zur Durchführung dieses Vorschrift muss man lediglich 
+\begin_inset Formula $A$
+\end_inset
+
+ in die drei Anteile aufteilen, eine Diagonalmatrix invertieren und der
+ Rest sind einfache Matrixmultiplikationen und Additionen.
+ Vorausgesetzt natürlich, es gilt 
+\begin_inset Formula $\rho\left(M_{J}\right)<1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Herleitung über eine komponentenweise Fixpunktdarstellung
+\end_layout
+
+\begin_layout Standard
+Wie einfach dieses Verfahren ist, sieht man auch an einer alternativen Herleitun
+g des Verfahrens, die auf einer komponentenweisen Fixpunktdarstellung der
+ Aufgabe (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "LGS"
+
+\end_inset
+
+) basiert.
+ Betrachten wir das LGS diesmal in Komponentenschreibweise: 
+\begin_inset Formula 
+\[
+\begin{pmatrix}a_{11} & a_{12} & \ldots & a_{1n}\\
+a_{21} & \ddots &  & \vdots\\
+\vdots &  & \ddots & \vdots\\
+a_{n1} & \cdots & \cdots & a_{nn}
+\end{pmatrix}\begin{pmatrix}x_{1}\\
+x_{2}\\
+\vdots\\
+x_{n}
+\end{pmatrix}=\begin{pmatrix}b_{1}\\
+b_{2}\\
+\vdots\\
+b_{n}
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Angenommen 
+\begin_inset Formula $a_{ii}\neq0,i\in\left\{ 1,...,n\right\} $
+\end_inset
+
+ .
+ Dann kann man jedes 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ in Abhängigkeit der restlichen 
+\begin_inset Formula $x_{j},\:j\neq i$
+\end_inset
+
+ darstellen, und zwar als
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+x_{i}=\frac{b_{i}-{\displaystyle \sum_{\underset{j\neq i}{j=1}}^{n}a_{ij}x_{j}}}{a_{ii}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Daraus erhält man die komponentenweise Fixpunktiteration (hier sind die
+ Iterationsindizes oben in Klammern dargestellt um die Indizes der Komponenten
+ zu erhalten)
+\begin_inset Formula 
+\begin{equation}
+x^{\left(k+1\right)}=\begin{pmatrix}x_{0}^{\left(k+1\right)}\\
+\vdots\\
+\\
+x_{n}^{\left(k+1\right)}
+\end{pmatrix}=\begin{pmatrix}\frac{b_{1}-{\displaystyle \sum_{\underset{j\neq1}{j=1}}^{n}a_{1j}x_{j}^{\left(k\right)}}}{a_{11}}\\
+\vdots\\
+\\
+\\
+\end{pmatrix}\label{eq:jacobi-component-iteration}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Stellt man diese wieder in Matrixschreibweise da, erhält man wieder das
+ Jacobi-Verfahren.
+ Denn es gilt 
+\begin_inset Formula 
+\[
+x^{\left(k+1\right)}=\begin{pmatrix}\frac{b_{1}-{\displaystyle \sum_{\underset{j\neq1}{j=1}}^{n}a_{1j}x_{j}^{\left(k\right)}}}{a_{11}}\\
+\vdots\\
+\\
+\\
+\end{pmatrix}=D^{-1}\begin{pmatrix}b_{1}-{\displaystyle \sum_{\underset{j\neq1}{j=1}}^{n}a_{1j}x_{j}^{\left(k\right)}}\\
+\vdots\\
+\\
+\\
+\end{pmatrix}=D^{-1}b+D^{-1}\begin{pmatrix}{\displaystyle \sum_{j=1}^{i-1}a_{1j}x_{j}^{\left(k\right)}+\sum_{j=i+1}^{n}a_{1j}x_{j}^{\left(k\right)}}\\
+\vdots\\
+\\
+\\
+\end{pmatrix}=
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+=D^{-1}\left(L+R\right)x^{\left(k\right)}+D^{-1}b
+\]
+
+\end_inset
+
+Man sieht außerdem, dass jede Komponente des nächsten Iterationsvektors
+ nur von den Komponenten des Ergebnisses der vorherigen Iteration abhängt.
+ Man kann also alle Komponenten von 
+\begin_inset Formula $x^{\left(k+1\right)}$
+\end_inset
+
+ auf einmal berechnen, ohne die Ergebnisse bereits berechneter Komponenten
+ von 
+\begin_inset Formula $x^{\left(k+1\right)}$
+\end_inset
+
+ einzubeziehen.
+ Daher kommt auch der alternative Name 
+\emph on
+Gesamtschrittverfahren
+\emph default
+.
+ Eine bemerkenswerte Konsequenz ist, dass man die 
+\begin_inset Formula $x^{\left(k+1\right)}$
+\end_inset
+
+ vollkommen parallel berechnen kann, was bei einer Implementierung Zeitvorteile
+ verschaffen kann.
+\end_layout
+
+\begin_layout Subsubsection
+Konvergenzbedingungen
+\end_layout
+
+\begin_layout Standard
+Zur Konvergenz ergibt sich unmittelbar folgender
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{theorem}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "diagonal-dominant-convergence-jacobi"
+
+\end_inset
+
+Das Jacobi-Verfahren konvergiert für alle strikt diagonaldominanten Matrizen
+ 
+\begin_inset Formula $A\in\mathbb{R}^{n\times n}$
+\end_inset
+
+, d.h.
+ wenn 
+\begin_inset Formula $|a_{ii}|>{\displaystyle \sum_{\underset{j\neq i}{j=1}}^{n}|a_{ij}|}\:\forall i\in\left\{ 1,...,n\right\} $
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{theorem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\interleave M\interleave_{\infty}=\interleave D^{-1}\left(L+R\right)\interleave_{\infty}=\underset{i\in\left\{ 1,...,n\right\} }{\max}{\displaystyle \sum_{\underset{j\neq1}{j=1}}^{n}\frac{|a_{ij}|}{|a_{ii}|}<1}
+\]
+
+\end_inset
+
+Die Behauptung folgt dann aus Korollar 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "matrix-contraction-by-matrix-norm"
+
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Konvergenzbedingung kann man noch abschwächen.
+ Man kann zeigen, dass das Verfahren auch für so genannte irreduzibel diagonaldo
+minante Matrizen konvergiert, welche große praktische Bedeutung haben.
+ Für den Beweis benötigt man Satz 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "spectral-radius-theorem"
+
+\end_inset
+
+ (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.144f).
+ Außerdem konvergiert das Verfahren für alle positiv definiten symmetrischen
+ Matrizen (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.180).
+\end_layout
+
+\begin_layout Subsection
+Das Gauß-Seidel-Verfahren
+\end_layout
+
+\begin_layout Standard
+Das 
+\emph on
+Gauß-Seidel-Verfahren
+\emph default
+ oder 
+\emph on
+Einzelschrittverfahren
+\emph default
+ kann man auf die selben Arten motivieren wie das Gesamtschrittverfahren.
+ Die Motivation über die komponentenweise Darstellung ist hier aber besonders
+ interessant, da diese sich aus der Überlegung ergibt, wie man das Gesamtschritt
+verfahren hinsichtlich Konvergenzgeschwindigkeit noch verbessern kann.
+\end_layout
+
+\begin_layout Subsubsection
+Herleitung als Verbesserung des Jacobi-Verfahrens
+\end_layout
+
+\begin_layout Standard
+Wenn man (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:jacobi-component-iteration"
+
+\end_inset
+
+) betrachtet, dann fällt auf, dass zur Berechnung von 
+\begin_inset Formula $x_{i}^{\left(k+1\right)}$
+\end_inset
+
+ immer nur Komponenten 
+\begin_inset Formula $x^{\left(k\right)}$
+\end_inset
+
+ aus dem Ergebnis des letzten Iterationssschritts als Eingabe vorkommen.
+ Der Gedanke liegt nahe, dass man wo es geht anstatt den Komponenten 
+\begin_inset Formula $x_{j}^{\left(k\right)}$
+\end_inset
+
+des letzten Schrittes die bereits berechneten Komponenten des aktuellen
+ Iterationsschritts 
+\begin_inset Formula $x_{j}^{\left(k+1\right)}$
+\end_inset
+
+ verwendet.
+ Das ergibt die Iterationsvorschrift
+\begin_inset Formula 
+\begin{equation}
+x_{i}^{\left(k+1\right)}=\frac{b_{i}-{\displaystyle \sum_{j=1}^{i-1}a_{ij}x_{j}^{\left(k+1\right)}-\sum_{j=i+1}^{n}a_{ij}x_{j}^{\left(k\right)}}}{a_{ii}}\label{eq:component-gauss-seidel-iteration}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dieses Verfahren erfordert, dass man die Komponenten von 
+\begin_inset Formula $x^{\left(k+1\right)}$
+\end_inset
+
+ hintereinander, also einzeln, berechnet.
+ Daher auch der Name 
+\emph on
+Einzelschrittverfahren
+\emph default
+.
+ Wie beim Jacobi-Verfahren gibt es auch eine Darstellung als allgemeine
+ Fixpunktiteration der Form (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+).
+ Diese Darstellung verwendet dieselbe Zerlegung der Matrix 
+\begin_inset Formula $A$
+\end_inset
+
+ wie das Jacobi-Verfahren, nämlich 
+\begin_inset Formula $A=D-L-R$
+\end_inset
+
+.
+ Aus Platzgründen verzichte ich auf die Herleitung und erwähne nur, dass
+ man die folgende Fixpunktiteration erhält:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x_{k+1}=\underset{:=M_{GS}}{\left(D-L\right)^{-1}R}x_{k}+\underset{:=c_{GS}}{\left(D-L\right)^{-1}b}\label{eq:gauss-seidel-iteration-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Splitting-Matrix 
+\begin_inset Formula $B$
+\end_inset
+
+ ist hier also offensichtlich gewählt als 
+\begin_inset Formula $B=D-L$
+\end_inset
+
+.
+ Falls das Verfahren anwendbar ist, ist 
+\begin_inset Formula $B$
+\end_inset
+
+ immer noch leicht zu invertieren, da 
+\begin_inset Formula $B$
+\end_inset
+
+ dann eine invertierbare untere Dreiecksmatrix ist.
+\end_layout
+
+\begin_layout Subsubsection
+Konvergenz
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Konvergenz-gs"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Man kann zeigen, dass auch das Gauß-Seidel-Verfahren für strikt diagonaldominant
+e Matrizen konvergiert:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{theorem}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "diagonal-dominant-convergence-gs"
+
+\end_inset
+
+Das Gauß-Seidel-Verfahren konvergiert für alle strikt diagonaldominanten
+ Matrizen 
+\begin_inset Formula $A\in\mathbb{C}^{n\times n}$
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{theorem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}
+\end_layout
+
+\end_inset
+
+Sei 
+\begin_inset Formula $A\in\mathbb{C}^{n\times n}$
+\end_inset
+
+ strikt diagonaldominant.
+ Sei 
+\begin_inset Formula $x\in\mathbb{R}^{n}$
+\end_inset
+
+ mit 
+\begin_inset Formula $\Vert x\Vert_{\infty}=1$
+\end_inset
+
+ beliebig.
+ Es gilt für die 
+\begin_inset Formula $i$
+\end_inset
+
+-te Komponente von 
+\begin_inset Formula $M_{GS}x$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\left(M_{GS}x\right)_{i}=\frac{-{\displaystyle \sum_{j=1}^{i-1}a_{ij}\left(M_{GS}x\right)_{j}-\sum_{j=i+1}^{n}a_{ij}x_{j}}}{a_{ii}}\;\forall i\in\left\{ 1,...,n\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Durch 
+\begin_inset Quotes gld
+\end_inset
+
+Induktion über 
+\begin_inset Formula $i$
+\end_inset
+
+ von 
+\begin_inset Formula $1$
+\end_inset
+
+ bis 
+\begin_inset Formula $n$
+\end_inset
+
+
+\begin_inset Quotes grd
+\end_inset
+
+ zeigt man, dass 
+\begin_inset Formula $\left(M_{GS}x\right)_{i}\leq\interleave M_{J}\interleave_{\infty}$
+\end_inset
+
+.
+ Wegen 
+\begin_inset Formula $\Vert x\Vert_{\infty}=1$
+\end_inset
+
+ folgt dann auch 
+\begin_inset Formula $\underset{\Vert x\Vert_{\infty}=1}{\max}\Vert M_{GS}x\Vert_{\infty}=\interleave M_{GS}\interleave_{\infty}\leq\interleave M_{J}\interleave_{\infty}$
+\end_inset
+
+.
+ Wegen 
+\begin_inset Formula $\interleave M_{J}\interleave_{\infty}<1$
+\end_inset
+
+ (und Korollar 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "matrix-contraction-by-matrix-norm"
+
+\end_inset
+
+) folgt damit die Behauptung.
+\end_layout
+
+\begin_layout Standard
+Sei also 
+\begin_inset Formula $i=1$
+\end_inset
+
+.
+ Es gilt 
+\begin_inset Formula 
+\[
+\left|\left(M_{GS}x\right)_{1}\right|\leq\frac{\left|{\displaystyle -\sum_{j=2}^{n}}a_{ij}x_{j}\right|}{\left|a_{ii}\right|}\leq\frac{{\displaystyle \sum_{j=2}^{n}}\left|a_{ij}x_{j}\right|}{\left|a_{ii}\right|}\leq\frac{{\displaystyle \sum_{j=2}^{n}}\left|a_{ij}\right|\left|x_{j}\right|}{\left|a_{ii}\right|}\leq\frac{{\displaystyle \sum_{j=2}^{n}}\left|a_{ij}\right|\Vert x\Vert_{\infty}}{\left|a_{ii}\right|}\leq\interleave M_{J}\interleave_{\infty}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Gelte nun die Induktionsvoraussetzung 
+\begin_inset Formula $\left|\left(M_{GS}x\right)_{j}\right|\leq\interleave M_{J}\interleave_{\infty}$
+\end_inset
+
+ für 
+\begin_inset Formula $j\in\left\{ 1,...,i-1\right\} $
+\end_inset
+
+.
+ Dann ist 
+\begin_inset Formula 
+\[
+\left|\left(M_{GS}x\right)_{i}\right|\leq\frac{{\displaystyle \sum_{j=1}^{i-1}\left|a_{ij}\right|\left|\left(M_{GS}x\right)_{j}\right|+\sum_{j=i+1}^{n}\left|a_{ij}\right|\left|x_{j}\right|}}{\left|a_{ii}\right|}\leq\frac{{\displaystyle \sum_{j=1}^{i-1}\left|a_{ij}\right|\overset{<1}{\interleave M_{J}\interleave_{\infty}}+\sum_{j=i+1}^{n}\left|a_{ij}\right|\overset{=1}{\Vert x\Vert_{\infty}}}}{\left|a_{ii}\right|}\leq
+\]
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\leq\frac{{\displaystyle \sum_{j=1}^{i-1}\left|a_{ij}\right|+\sum_{j=i+1}^{n}\left|a_{ij}\right|}}{\left|a_{ii}\right|}\leq\interleave M_{J}\interleave_{\infty}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Der Beweis zeigt insbesondere, dass das Gauß-Seidel-Verfahren eine bessere
+ asymptotische Konvergenzrate als das Jacobi-Verfahren hat.
+ Für eine gewisse Klasse von Matrizen kann man sogar zeigen, dass 
+\begin_inset Formula $\rho\left(M_{GS}\right)=\rho\left(M_{J}\right)^{2}$
+\end_inset
+
+ (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.157).
+ Zusammen mit Satz 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fix-point-iteration-convergence-speed"
+
+\end_inset
+
+ kann man dann erwarten, dass das Gauß-Seidel-Verfahren für die selbe Genauigkei
+t etwa halb so viele Iterationen benötigt.
+\end_layout
+
+\begin_layout Standard
+Außerdem kann man zeigen, dass das Jacobi-Verfahren wie das Jacobi-Verfahren
+ für symmetrisch positiv definite und irreduzibel diagonaldominante Matrizen
+ konvergiert (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "DH08"
+
+\end_inset
+
+, S.
+ 263f; 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.
+ 148f).
+ Es sieht also alles in allem nach einem überlegenen Verfahren aus.
+ Dass das trotz allem nicht unbedingt so ist, diskutiere ich kurz in Abschnitt
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Implementierung-und-Vergleich"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Das SOR-Verfahren
+\end_layout
+
+\begin_layout Subsubsection
+Herleitung als Verbesserung des Einzelschrittverfahrens
+\end_layout
+
+\begin_layout Standard
+Wie das Gauß-Seidel-Verfahren motiviert man das nächste Verfahren auch aus
+ einer Überlegung heraus, wie man das vorhergehende Verfahren noch verbessern
+ kann.
+ Zugrunde liegt hier der Gedanke, dass die Werte der neuen Iteration (die
+ ja schon näher an der Lösung sein sollten) im Einzelschritt höher gewichtet
+ werden sollten als die Komponenten aus der alten Iteration (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "DB14"
+
+\end_inset
+
+, S.12).
+ Man baut dazu in das Einzelschrittverfahren eine Gewichtung durch einen
+ Parameter 
+\begin_inset Formula $\omega$
+\end_inset
+
+ ein und setzt in der komponentenweisen Darstellung
+\begin_inset Formula 
+\begin{equation}
+x_{i}^{\left(k+1\right)}:=x_{i}^{\left(k\right)}+\omega\left(\frac{b_{i}-{\displaystyle \sum_{j=1}^{i-1}a_{ij}x_{j}^{\left(k+1\right)}-\sum_{j=i+1}^{n}a_{ij}x_{j}^{\left(k\right)}}}{a_{ii}}-x_{i}^{\left(k\right)}\right),\:i\in\left\{ 1,...,n\right\} \label{eq:sor-iteration-components}
+\end{equation}
+
+\end_inset
+
+Der Parameter 
+\begin_inset Formula $\omega$
+\end_inset
+
+ heißt 
+\emph on
+Relaxationsparameter
+\emph default
+.
+ Wenn die neuen Werte höher gewichtet werden sollen, bedeutet das natürlich,
+ dass 
+\begin_inset Formula $\omega>1$
+\end_inset
+
+ sein sollte.
+ Das so entstehende Verfahren heißt 
+\emph on
+Successive Over-Relaxation
+\emph default
+ (SOR, 
+\emph on
+over-
+\emph default
+relaxation, weil 
+\begin_inset Formula $\omega>1$
+\end_inset
+
+).
+ Für 
+\begin_inset Formula $\omega=1$
+\end_inset
+
+ ist dieses Verfahren äquivalent zum Einzelschrittverfahren.
+\end_layout
+
+\begin_layout Standard
+Auch (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:sor-iteration-components"
+
+\end_inset
+
+) hat eine Darstellung als allgemeine Fixpunktiteration der Form (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+).
+ Diese Darstellung verwendet wieder die Zerlegung 
+\begin_inset Formula $A=D-L-R$
+\end_inset
+
+.
+ Aus Platzgründen verzichte ich auf die Herleitung und erwähne nur, dass
+ man die folgende Fixpunktiteration erhält:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x_{k+1}=\underset{:=M_{SOR}}{\left(D-\omega L\right)^{-1}\left[\left(1-\omega\right)D+\omega R\right]}x_{k}+\underset{:=c_{SOR}}{\omega\left(D-L\right)^{-1}b}\label{eq:sor-iteration}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Splitting-Matrix 
+\begin_inset Formula $B$
+\end_inset
+
+ ist hier gewählt als 
+\begin_inset Formula $B=\frac{1}{\omega}D-L$
+\end_inset
+
+.
+ Falls das Verfahren anwendbar ist, ist 
+\begin_inset Formula $B$
+\end_inset
+
+ immer noch leicht zu invertieren, da 
+\begin_inset Formula $B$
+\end_inset
+
+ eine invertierbare untere Dreiecksmatrix ist.
+\end_layout
+
+\begin_layout Subsubsection
+Konvergenz
+\end_layout
+
+\begin_layout Standard
+Natürlich möchte man für eine konkrete Aufgabe 
+\begin_inset Formula $\omega$
+\end_inset
+
+ so wählen, dass die Konvergenzgeschwindigkeit optimal ist.
+ Hierzu sollte man erst wissen, welche Matrizen 
+\begin_inset Formula $A$
+\end_inset
+
+ und welche Werte für 
+\begin_inset Formula $\omega$
+\end_inset
+
+ überhaupt in Frage kommen.
+ Orientierung liefert der folgende
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{theorem}[Satz von Ostrowski und Reich]
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "spf-convergence-sor"
+
+\end_inset
+
+Das SOR-Verfahren konvergiert für positiv definitive symmetrische Matrizen
+ genau dann wenn 
+\begin_inset Formula $\omega\in\left]0,2\right[$
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{theorem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Für einen Beweis verweise ich auf (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.152f).
+ Man kann außerdem bestimmen, wie der optimale Parameter 
+\begin_inset Formula $\omega$
+\end_inset
+
+ in diesem Fall aussieht.
+ Allerdings muss man dazu die Eigenwerte der Iterationsmatrix 
+\begin_inset Formula $M_{SOR}$
+\end_inset
+
+ kennen, was in der Praxis nicht immer der Fall ist.
+ Mit dem optimalen Parameter konvergiert das Verfahren allerdings teilweise
+ wesentlich schneller als das Einzelschrittverfahren (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.
+ 163, S.
+ 180).
+\end_layout
+
+\begin_layout Section
+Polynomiale Konvergenzbeschleunigung
+\end_layout
+
+\begin_layout Standard
+Die Idee hinter der 
+\emph on
+polynomialen Konvergenzbeschleunigung
+\emph default
+ ist für ein besseres neues Iterationsergebnis nicht nur das letzte und
+ das aktuelle Ergebnis, sondern alle bisher vorliegenden Ergebnisse zu kombinier
+en.
+ Hierzu konstruiert man aus der ursprünglichen Folge 
+\begin_inset Formula $\left(x_{k}\right)$
+\end_inset
+
+ einer Iterationsvorschrift eine zweite Folge 
+\begin_inset Formula $\left(y_{k}\right)$
+\end_inset
+
+, wobei die 
+\begin_inset Formula $y_{k}$
+\end_inset
+
+ eine Linearkombination aus den 
+\begin_inset Formula $x_{i},\;i\leq k$
+\end_inset
+
+ sind, also 
+\begin_inset Formula $y_{k}={\displaystyle \sum_{i=0}^{k}}\alpha_{ki}x_{k}$
+\end_inset
+
+.
+ Die Schwierigkeit ist natürlich, geeignete 
+\begin_inset Formula $\alpha_{ki}$
+\end_inset
+
+ zu finden, die den Iterationsfehler 
+\begin_inset Formula $y_{k}-\hat{x}:=d_{k}$
+\end_inset
+
+ minimieren.
+ Setzt man 
+\begin_inset Formula $e_{k}:=x_{k}-\hat{x}$
+\end_inset
+
+ für den Fehler der Grundfolge, so gilt (
+\begin_inset Formula $M$
+\end_inset
+
+ ist natürlich die Iterationsmatrix des Verfahrens für die 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+)
+\begin_inset Formula 
+\begin{equation}
+d_{k}={\displaystyle \sum_{i=0}^{k}}\alpha_{ki}x_{k}-\hat{x}\overset{\left(*\right)}{=}{\displaystyle \sum_{i=0}^{k}}\alpha_{ki}\left(x_{k}-\hat{x}\right)={\displaystyle \sum_{i=0}^{k}}\alpha_{ki}e_{i}\overset{\left(**\right)}{=}{\displaystyle \sum_{i=0}^{k}}\alpha_{ki}M^{i}e_{o}=P_{k}\left(M\right)d_{0}\label{eq:tsch-error}
+\end{equation}
+
+\end_inset
+
+ wobei 
+\begin_inset Formula $P_{k}\left(M\right):={\displaystyle \sum_{i=0}^{k}}\alpha_{ki}M^{i}$
+\end_inset
+
+ ein Matrix-Polynom ist.
+ Schritt 
+\begin_inset Formula $\left(*\right)$
+\end_inset
+
+ gilt, weil 
+\begin_inset Formula ${\displaystyle \sum_{i=0}^{k}}\alpha_{ki}=1$
+\end_inset
+
+ (denn sonst könnte der Ansatz für 
+\begin_inset Formula $x_{0}=\hat{x}:=A^{-1}b$
+\end_inset
+
+ offensichtlich nicht korrekt sein).
+ Schritt 
+\begin_inset Formula $\left(**\right)$
+\end_inset
+
+ gilt, weil man zeigen kann, dass 
+\begin_inset Formula $e_{i}=M^{k}e_{0}$
+\end_inset
+
+ (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.137).
+\end_layout
+
+\begin_layout Standard
+Wir müssen also 
+\begin_inset Formula $\interleave P_{k}\left(M\right)\interleave$
+\end_inset
+
+ minimieren, um damit 
+\begin_inset Formula $d_{k}$
+\end_inset
+
+ zu minimieren.
+ Hierzu beobachtet man zuerst, dass 
+\begin_inset Formula $\interleave P_{k}\left(M\right)\interleave_{2}=\underset{i}{\max}\left|P_{k}\left(\lambda_{i}\right)\right|$
+\end_inset
+
+.
+ Wenn nun alle Eigenwerte von 
+\begin_inset Formula $M$
+\end_inset
+
+ reell sind und man den ungefähren Bereich kennt, in dem sich die Eigenwerte
+ von 
+\begin_inset Formula $M$
+\end_inset
+
+ befinden, also ein 
+\begin_inset Formula $a$
+\end_inset
+
+ und ein 
+\begin_inset Formula $b$
+\end_inset
+
+ mit 
+\begin_inset Formula $a\leq\lambda_{min}\left(M\right)\leq\lambda_{max}\left(M\right)\leq b$
+\end_inset
+
+, erhält man so wegen 
+\begin_inset Formula $\underset{i}{\max}\left|P_{k}\left(\lambda_{i}\right)\right|\leq\underset{\lambda\in[a,b]}{\max}\left|P_{k}\left(\lambda\right)\right|$
+\end_inset
+
+ die lösbare(!) Aufgabe, ein Matrixpolynom 
+\begin_inset Formula $Q$
+\end_inset
+
+ vom Höchstgrad 
+\begin_inset Formula $k$
+\end_inset
+
+ mit 
+\begin_inset Formula $Q_{k}\left(1\right)=1$
+\end_inset
+
+ (wegen 
+\begin_inset Formula $\left(*\right)$
+\end_inset
+
+) zu finden für das
+\begin_inset Formula $\underset{\lambda\in\left[a,b\right]}{\max}|Q_{k}\left(\lambda\right)|$
+\end_inset
+
+ minimal ist.
+ Die Lösung dieses Problems ist durch ein normiertes Tschebyscheff-Polynom
+ gegeben (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.174).
+ Mit Hilfe der Theorie der Tschebyscheff-Polynome kann man dann eine Iterationsv
+orschrift herleiten.
+ Diese lautet wie folgt:
+\end_layout
+
+\begin_layout Standard
+Gegeben sei ein Iterationsverfahren der Form (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+) mit einer Iterationsmatrix 
+\begin_inset Formula $M$
+\end_inset
+
+ mit nur reellen Eigenwerten.
+ Dann wähle einen Startvektor 
+\begin_inset Formula $x_{0}$
+\end_inset
+
+ und setze 
+\begin_inset Formula $\gamma:=\frac{2}{2-b-a}$
+\end_inset
+
+, 
+\begin_inset Formula $\rho\left(1\right):=2$
+\end_inset
+
+, und 
+\begin_inset Formula 
+\[
+x_{1}:=\gamma\left(Mx_{o}+c\right)+\left(1-\gamma\right)x_{0}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\rho_{k+1}:=\frac{1}{1-\frac{1}{4*\left(\frac{2-b-a}{b-a}\right)^{2}}\rho_{k}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x_{k+1}:=\rho_{k+1}\left(\gamma\left(Mx_{k}+c\right)+\left(1-\gamma\right)x_{k}\right)+\left(1-\rho_{k+1}\right)x_{k-1}\label{eq:tschebyscheff-x}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es ist bemerkenswert, dass diese Vorschrift kein Abspeichern der Iterierten
+ der Basisiteration erfordert, obwohl sie alle in die Berechnung eingehen.
+ Ein Problem ist allerdings noch, dass für die bisher vorgestellten Verfahren
+ nicht garantiert ist, dass die Eigenwerte der Iterationsmatrix alle reell
+ sind.
+ Man kann sich aber mit einem Trick helfen.
+ Eine Möglichkeit ist eine Variante des SOR-Verfahrens, das 
+\emph on
+SSOR-Verfahren
+\emph default
+ (
+\emph on
+Symmetric 
+\emph default
+Successive Over-Relaxation).
+ Es ergibt sich aus dem SOR-Verfahren, in dem man einen Iterationsschritt
+ der komponentenweisen Darstellung des SOR-Verfahren durch einen Vorwärts-
+ und einen zusätzlichen Rückwärtsschritt ersetzt.
+ Man kann dann sowohl zeigen, dass durch eine geschickte Implementierung
+ kein zusätzlicher Rechenaufwand pro Iteration entsteht (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.167), als auch eine Iteration der Form (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "FixedPointForm"
+
+\end_inset
+
+) herleiten.
+ Sie lautet: 
+\begin_inset Formula 
+\begin{equation}
+x_{k+1}=M_{SSOR}x_{k}+c_{SSOR}b\label{eq:ssor-iteration}
+\end{equation}
+
+\end_inset
+
+ mit 
+\begin_inset Formula 
+\[
+M_{SSOR}\left(\omega\right):=\left[\left(1-\omega\right)D+\omega L\right]\left(D-\omega L\right)^{-1}\left(D-\omega R\right)^{-1}\left(\left(1-\omega\right)D+\omega R\right)
+\]
+
+\end_inset
+
+ und 
+\begin_inset Formula 
+\[
+c_{SSOR}:=\omega\left(2-\omega\right)\left(D-\omega R\right)^{-1}D\left(D-\omega L\right)^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Das entspricht der Wahl 
+\begin_inset Formula $B=\frac{1}{\omega\left(2-\omega\right)}\left(D-\omega L\right)D^{-1}\left(D-\omega R\right)$
+\end_inset
+
+ für die Splitting-Matrix.
+ Das Verfahren konvergiert ebenso wie das SOR-Verfahren für positiv definite
+ symmetrische Matrizen und 
+\begin_inset Formula $\omega\in\left]0,2\right[$
+\end_inset
+
+.
+ Außerdem besitzt 
+\begin_inset Formula $M_{SSOR}\left(\omega\right)$
+\end_inset
+
+ nur reelle Eigenwerte (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kan05"
+
+\end_inset
+
+, S.
+ 165ff).
+ Man erhält ein sehr schnell konvergierendes Iterationsverfahren, dass in
+ diesem Kontext nur durch die beschleunigte Variante (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:tschebyscheff-x"
+
+\end_inset
+
+) übertroffen wird.
+\end_layout
+
+\begin_layout Section
+Implementierung und Vergleich
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Implementierung-und-Vergleich"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ich habe die Verfahren oben für die folgende Aufgabe implementiert
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Für alle Rechnungen und Graphiken habe ich Python 2.7 mit den Paketen numpy
+ und matplotlib verwendet.
+\end_layout
+
+\end_inset
+
+ und beispielhaft visualisiert:
+\begin_inset Formula 
+\[
+\begin{pmatrix}2 & -1 & 0\\
+-1 & 2 & -1\\
+0 & -1 & 2
+\end{pmatrix}x=\begin{pmatrix}19\\
+45\\
+0
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Matrix ist symmetrisch und positiv definit und eignet sich somit für
+ alle hier behandelten Verfahren.
+ Die Lösung lautet 
+\begin_inset Formula $\hat{x}=\left(36.75,54.5,27.25\right)^{T}$
+\end_inset
+
+.
+ Für das SOR und das SSOR-Verfahren habe ich jeweils einen Parameter 
+\begin_inset Formula $\omega$
+\end_inset
+
+ gewählt, der nahe am Optimum 
+\begin_inset Formula $\omega_{*}$
+\end_inset
+
+ liegt (hier sind 
+\begin_inset Formula $\omega_{*}\approx1.02$
+\end_inset
+
+ für SOR, und 
+\begin_inset Formula $\omega_{*}\approx1.26$
+\end_inset
+
+ für SSOR).
+ Die folgende Graphik zeigt den Fehler 
+\begin_inset Formula $\left\Vert x_{i}-\hat{x}\right\Vert $
+\end_inset
+
+ abhängig von der Iteration.
+ Der Startwert ist 
+\begin_inset Formula $x_{0}=\left(0,0,0\right)^{T}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{-0.6cm}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename combined.png
+	scale 41
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Man kann also auch in der Praxis deutlich sehen, dass das Jacobi-Verfahren
+ am langsamsten konvergiert.
+ Die in Abschnitt 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Konvergenz-gs"
+
+\end_inset
+
+ aufgestellte Vermutung, dass die Konvergenz von Gauß-Seidel ungefähr doppelt
+ so schnell ist, lässt sich hier gut nachvollziehen.
+ SOR konvergiert hier allerdings nicht deutlich schneller als das Gauß-Seidel-Ve
+rfahren, obwohl hier ein fast optimaler Parameter 
+\begin_inset Formula $\omega$
+\end_inset
+
+ gewählt wurde.
+ Das liegt daran, dass das optimale 
+\begin_inset Formula $\omega$
+\end_inset
+
+ hier sehr nahe bei 
+\begin_inset Formula $1$
+\end_inset
+
+ liegt, und für 
+\begin_inset Formula $\omega=1$
+\end_inset
+
+ das SOR-Verfahren gerade das Gauß-Seidel-Verfahren ist.
+ Das SSOR Verfahren konvergiert hier noch einmal deutlich schneller, und
+ das Tschebyscheff-Verfahren konvergiert am schnellsten.
+ Allerdings muss man für den optimalen Einsatz der drei schnellsten Verfahren
+ Wissen über die Eigenwerte der Iterationsmatrix haben.
+\end_layout
+
+\begin_layout Standard
+Aus der zugehörigen Wertetabelle lässt sich auch die Fautregel zur Erhöhung
+ der Genauigkeit um eine Dezimalstelle bestätigen: Betrachtet man zum Beispiel
+ die Werte für das SSOR-Verfahren.
+ Es gilt für die Eigenwerte 
+\begin_inset Formula $\lambda_{i}$
+\end_inset
+
+ von 
+\begin_inset Formula $M_{SSOR}$
+\end_inset
+
+, dass 
+\begin_inset Formula $\lambda_{i}\in\left]0.005,0.43\right[$
+\end_inset
+
+, also 
+\begin_inset Formula $\rho\left(M_{SSOR}\right)\approx0.43$
+\end_inset
+
+.
+ Also ist 
+\begin_inset Formula $a=-log_{10}\left(\alpha\right)\approx0.37$
+\end_inset
+
+.
+ Also kann man nach Abschnitt 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Allgemeine-Konvergenzgeschwindig"
+
+\end_inset
+
+ etwa 
+\begin_inset Formula $\frac{1}{a}\approx2.73$
+\end_inset
+
+ Schritte erwarten, um den Fehler um eine Dezimalstelle zu verringern.
+ Ein Blick auf die Tabelle bestätigt das.
+\end_layout
+
+\begin_layout Standard
+Man könnte meinen, das Jacobi-Verfahren sei damit 
+\begin_inset Quotes gld
+\end_inset
+
+aus dem Rennen
+\begin_inset Quotes grd
+\end_inset
+
+.
+ Das ist aber nicht so.
+ Durch die Gesamtschritteigenschaft lässt es sich besser parallelisieren
+ als die anderen Verfahren.
+ Bei einer großen(!)
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Für optimale Resultate benötigt man so viele Prozessoren wie 
+\begin_inset Formula $A$
+\end_inset
+
+ Zeilen oder Spalten hat.
+ Das halte ich aber beim Einsatz von GPUs für nicht unrealistisch.
+\end_layout
+
+\end_inset
+
+ Anzahl Prozessoren ist es trotz geringerer Konvergenzgeschwindigkeit insgesamt
+ praktisch überlegen (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "TSI89"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand nocite
+key "H-B09,Kan05,DH08"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "math_lit"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
