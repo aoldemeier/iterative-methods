@@ -711,7 +711,7 @@ Für die Fixpunktiteration wie oben gelte
 
 .
  Sei 
-\begin_inset Formula $J_{A}=S^{-1}AS$
+\begin_inset Formula $J_{M}=S^{-1}MS$
 \end_inset
 
  die Jordansche Normalform von 
@@ -735,7 +735,7 @@ Für die Fixpunktiteration wie oben gelte
  gilt dann: 
 \begin_inset Formula 
 \[
-\interleave M\interleave_{\epsilon}=\underset{x\neq0}{max}\frac{\Vert Ax\Vert_{\epsilon}}{\Vert x\Vert_{\epsilon}}=\underset{x\neq0}{max}\frac{\Vert\left(SD_{\epsilon}\right)^{-1}Ax\Vert_{\infty}}{\Vert\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}}=
+\interleave M\interleave_{\epsilon}=\underset{x\neq0}{max}\frac{\Vert Mx\Vert_{\epsilon}}{\Vert x\Vert_{\epsilon}}=\underset{x\neq0}{max}\frac{\Vert\left(SD_{\epsilon}\right)^{-1}Mx\Vert_{\infty}}{\Vert\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}}=
 \]
 
 \end_inset
@@ -743,7 +743,7 @@ Für die Fixpunktiteration wie oben gelte
 
 \begin_inset Formula 
 \[
-=\underset{x\neq0}{max}\frac{\Vert\left(SD_{\epsilon}\right)^{-1}A\left(SD_{\epsilon}\right)\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}}{\Vert\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}}=\underset{x\neq0}{max}\Vert\left(SD_{\epsilon}\right)^{-1}A\left(SD_{\epsilon}\right)\Vert_{\infty}=
+=\underset{x\neq0}{max}\frac{\Vert\left(SD_{\epsilon}\right)^{-1}M\left(SD_{\epsilon}\right)\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}}{\Vert\left(SD_{\epsilon}\right)^{-1}x\Vert_{\infty}}=\underset{x\neq0}{max}\interleave\left(SD_{\epsilon}\right)^{-1}M\left(SD_{\epsilon}\right)\interleave_{\infty}=
 \]
 
 \end_inset
@@ -751,7 +751,7 @@ Für die Fixpunktiteration wie oben gelte
 
 \begin_inset Formula 
 \[
-=\Vert\left(SD_{\epsilon}\right)^{-1}A\left(SD_{\epsilon}\right)\Vert_{\infty}=\Vert D_{\epsilon}^{-1}S^{-1}ASD_{\epsilon}\Vert_{\infty}=\Vert D_{\epsilon}^{-1}J_{A}D_{\epsilon}\Vert_{\infty}
+=\interleave\left(SD_{\epsilon}\right)^{-1}M\left(SD_{\epsilon}\right)\interleave_{\infty}=\interleave D_{\epsilon}^{-1}S^{-1}MSD_{\epsilon}\interleave_{\infty}=\interleave D_{\epsilon}^{-1}J_{M}D_{\epsilon}\interleave_{\infty}
 \]
 
 \end_inset
@@ -761,21 +761,21 @@ Für die Fixpunktiteration wie oben gelte
 
 \begin_layout Standard
 Nun kann man sehen, dass sich 
-\begin_inset Formula $D_{\epsilon}^{-1}J_{A}D_{\epsilon}$
+\begin_inset Formula $D_{\epsilon}^{-1}J_{M}D_{\epsilon}$
 \end_inset
 
  von der eigentlichen Blockdiagonalmatrix 
-\begin_inset Formula $J_{A}$
+\begin_inset Formula $J_{M}$
 \end_inset
 
- nur so unterscheidet, dass die Einsen überhalb der Diagonale der Joranblöcke
+ nur so unterscheidet, dass die Einsen überhalb der Diagonale der Jordanblöcke
  durch 
 \begin_inset Formula $\epsilon$
 \end_inset
 
  ersetzt sind.
  Damit ist die Summe der Einträge einer Zeile von 
-\begin_inset Formula $J_{A}$
+\begin_inset Formula $J_{M}$
 \end_inset
 
  entweder 
@@ -797,7 +797,7 @@ Nun kann man sehen, dass sich
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\interleave M\interleave_{\epsilon}=\Vert D_{\epsilon}^{-1}J_{A}D_{\epsilon}\Vert_{\infty}\leq\underset{}{max}|\lambda_{i}|+\epsilon=\rho\left(A\right)+\epsilon<1
+\interleave M\interleave_{\epsilon}=\interleave D_{\epsilon}^{-1}J_{M}D_{\epsilon}\interleave{}_{\infty}\leq\underset{}{max}|\lambda_{i}|+\epsilon=\rho\left(M\right)+\epsilon<1
 \]
 
 \end_inset
@@ -1075,7 +1075,7 @@ reference "FixedPointForm"
 \begin_inset Formula $A$
 \end_inset
 
- auf in eine Diagonalmatrix 
+ in eine Diagonalmatrix 
 \begin_inset Formula $D$
 \end_inset
 
@@ -1124,7 +1124,7 @@ A=\underset{:=D}{\begin{pmatrix}a_{11} & 0 & \ldots & 0\\
 \end_layout
 
 \begin_layout Standard
-Die Matrix wird also aufgesplittet in die Anteile 
+Die Matrix wird also gesplittet in die Anteile 
 \begin_inset Formula $B=D$
 \end_inset
 
