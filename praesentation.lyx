@@ -131,18 +131,6 @@ Problemstellung
 Kriterien: Geschwindigkeit, Einsatzmöglichkeiten, Stabilität.
 \end_layout
 
-\begin_layout Pause
-
-\end_layout
-
-\begin_layout Itemize
-Informationen über 
-\begin_inset Formula $A$
-\end_inset
-
- werden eine Rolle spielen.
-\end_layout
-
 \end_deeper
 \begin_layout Standard
 \begin_inset Separator plain
@@ -164,12 +152,17 @@ Splitting
 
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 Wähle invertierbare Matrix 
 \begin_inset Formula $B$
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Pause
+
 \end_layout
 
 \begin_layout Itemize
@@ -179,8 +172,413 @@ Wähle invertierbare Matrix
 
 \end_layout
 
+\begin_layout Pause
+
+\end_layout
+
 \begin_layout Itemize
 \begin_inset Formula $Ax=b\iff x=\left(I_{n}-B^{-1}A\right)x+B^{-1}b$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Fixpunktgleichung
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $x=\left(I_{n}-B^{-1}A\right)x+B^{-1}b$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Fixpunktgleichung: 
+\begin_inset Formula $x_{k+1}:=Mx_{k}+c$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Der Banachsche Fixpunktsatz
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Theorem
+
+\lang ngerman
+Sei 
+\begin_inset Formula $\left(\mathcal{K},\parallel.\parallel\right)$
+\end_inset
+
+ ein vollständiger metrischer Raum und 
+\begin_inset Formula $\Phi:\mathcal{K\rightarrow K}$
+\end_inset
+
+ eine 
+\emph on
+Kontraktion
+\emph default
+, d.h.
+ eine Abbildung, die für ein 
+\begin_inset Formula $q<1,q\in\mathbb{R}$
+\end_inset
+
+ die Eigenschaft 
+\begin_inset Formula 
+\[
+\parallel\Phi\left(x\right)-\Phi\left(z\right)\parallel\:\leq q\parallel x-z\parallel\forall x,z\in\mathcal{K}
+\]
+
+\end_inset
+
+ erfüllt.
+ Dann hat die 
+\emph on
+Fixpunktgleichung
+\emph default
+ 
+\begin_inset Formula $x=\Phi\left(x\right)$
+\end_inset
+
+ genau eine Lösung 
+\begin_inset Formula $\hat{x}\in\mathcal{K}$
+\end_inset
+
+ und für die Fixpunktiteration 
+\begin_inset Formula $x_{k+1}:=\Phi\left(x_{k}\right)$
+\end_inset
+
+ gilt 
+\begin_inset Formula $\underset{k\to\infty}{lim}x_{k}=\hat{x}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Konvergenz und Matrixnorm
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Lemma
+
+\lang ngerman
+Sei 
+\begin_inset Formula $\interleave.\interleave$
+\end_inset
+
+ eine Matrixnorm in 
+\begin_inset Formula $\mathbb{R}^{n\times n}$
+\end_inset
+
+, die mit einer Vektornorm 
+\begin_inset Formula $\Vert.\Vert$
+\end_inset
+
+ verträglich ist.
+ Die Fixpunktiteration konvergiert gegen 
+\begin_inset Formula $\hat{x}=A^{-1}b$
+\end_inset
+
+, wenn 
+\begin_inset Formula $\interleave M\interleave<1$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Konvergenz und Spektralradius
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Theorem
+
+\lang ngerman
+Das Fixpunktverfahren konvergiert genau dann wenn 
+\begin_inset Formula $\rho\left(M\right)<1$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\lang ngerman
+Beispiel?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Konvergenzgeschwindigkeit
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Theorem
+
+\lang ngerman
+Für das Fixpunktverfahren mit Iterationsmatrix 
+\begin_inset Formula $M$
+\end_inset
+
+, 
+\begin_inset Formula $\rho\left(M\right)<1$
+\end_inset
+
+ und Lösung 
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+ gilt: 
+\begin_inset Formula 
+\[
+\rho\left(M\right)=\alpha:=\underset{x_{0}\neq\hat{x}}{\sup}\underset{k\rightarrow\infty}{\limsup}\left(\Vert x^{k}-\hat{x}\Vert\right)^{\frac{1}{k}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Das Jacobi-Verfahren
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Split: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+tiny{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+A=\underset{:=D}{\begin{pmatrix}a_{11} & 0 & \ldots & 0\\
+0 & \ddots & 0 & \vdots\\
+\vdots & 0 & \ddots & \vdots\\
+0 & \cdots & \cdots & a_{nn}
+\end{pmatrix}}-\underset{:=L}{\begin{pmatrix}0 & 0 & \ldots & 0\\
+-a_{21} & \ddots & 0 & \vdots\\
+\vdots & \ddots & \ddots & \vdots\\
+-a_{n1} & -a_{n2} & \cdots & 0
+\end{pmatrix}}-\underset{:=R}{\begin{pmatrix}-a_{11} & -a_{12} & \ldots- & a_{1n}\\
+0 & \ddots & \ddots & -a_{2n}\\
+\vdots & 0 & \ddots & \vdots\\
+0 & \cdots & \cdots & 0
+\end{pmatrix}}
+\]
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Jacobi-Verfahren: 
+\begin_inset Formula $x_{k+1}:=\underset{:=M_{J}}{D^{-1}\left(L+R\right)x_{k}}+\underset{:=c_{J}}{D^{-1}b}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Das Jacobi-Verfahren
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Konvergenz für diagonaldominante Matrizen
+\end_layout
+
+\begin_layout Theorem
+
+\lang ngerman
+Das Jacobi-Verfahren konvergiert für alle strikt diagonaldominanten Matrizen
+ 
+\begin_inset Formula $A\in\mathbb{R}^{n\times n}$
+\end_inset
+
+, d.h.
+ wenn 
+\begin_inset Formula $|a_{ii}|>{\displaystyle \sum_{\underset{j\neq i}{j=1}}^{n}|a_{ij}|}\:\forall i\in\left\{ 1,...,n\right\} $
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Das Gauß-Seidel-Verfahren
+\end_layout
+
 \end_inset
 
 
@@ -198,9 +596,120 @@ Wähle invertierbare Matrix
 status open
 
 \begin_layout Plain Layout
-Fixpunktiteration
+Das Gauß-Seidel-Verfahren
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Konvergenz für diagonaldominante Matrizen
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Konvergenzbeschleunigung
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Successive-Over-Relaxation (SOR)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Konvergenzbeschleunigung
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Der Satz von Ostrowski und Reich
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Konvergenzbeschleunigung
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Tschebyscheff-Beschleunigung
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Implementierung und Vergleich
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
 \end_inset
 
 
