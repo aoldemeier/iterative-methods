@@ -521,6 +521,18 @@ Jacobi-Verfahren:
 
 \end_layout
 
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Herleitung über komponentenweise Darstellung: 
+\begin_inset Formula $x_{i}=\frac{b_{i}-{\displaystyle \sum_{\underset{j\neq i}{j=1}}^{n}a_{ij}x_{j}}}{a_{ii}}$
+\end_inset
+
+
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 \begin_inset Separator plain
@@ -543,7 +555,7 @@ Das Jacobi-Verfahren
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
+\begin_layout FrameSubtitle
 Konvergenz für diagonaldominante Matrizen
 \end_layout
 
@@ -584,6 +596,32 @@ Das Gauß-Seidel-Verfahren
 
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+Idee: Konvergenzbeschleunigung durch Verwendung der neuen Werte: 
+\begin_inset Formula $x_{i}^{\left(k+1\right)}=\frac{b_{i}-{\displaystyle \sum_{j=1}^{i-1}a_{ij}x_{j}^{\left(k+1\right)}-\sum_{j=i+1}^{n}a_{ij}x_{j}^{\left(k\right)}}}{a_{ii}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Gauß-Seidel: 
+\begin_inset Formula $x_{k+1}=\underset{:=M_{GS}}{\left(D-L\right)^{-1}R}x_{k}+\underset{:=c_{GS}}{\left(D-L\right)^{-1}b}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Frame
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Separator plain
 \end_inset
@@ -605,10 +643,17 @@ Das Gauß-Seidel-Verfahren
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
+\begin_layout FrameSubtitle
 Konvergenz für diagonaldominante Matrizen
 \end_layout
 
+\begin_layout Theorem
+
+\lang ngerman
+Das Gauß-Seidel-Verfahren konvergiert für alle strikt diagonaldominanten
+ Matrizen.
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 \begin_inset Separator plain
@@ -631,10 +676,30 @@ Konvergenzbeschleunigung
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
+\begin_layout FrameSubtitle
 Successive-Over-Relaxation (SOR)
 \end_layout
 
+\begin_layout Itemize
+Idee: Konvergenzbeschleunigung durch Gewichtung der neuen Werte: 
+\begin_inset Formula $x_{i}^{\left(k+1\right)}:=x_{i}^{\left(k\right)}+\omega\left(\frac{b_{i}-{\displaystyle \sum_{j=1}^{i-1}a_{ij}x_{j}^{\left(k+1\right)}-\sum_{j=i+1}^{n}a_{ij}x_{j}^{\left(k\right)}}}{a_{ii}}-x_{i}^{\left(k\right)}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+SOR: 
+\begin_inset Formula $x_{k+1}=\underset{:=M_{SOR}}{\left(D-\omega L\right)^{-1}\left[\left(1-\omega\right)D+\omega R\right]}x_{k}+\underset{:=c_{SOR}}{\omega\left(D-L\right)^{-1}b}$
+\end_inset
+
+
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 \begin_inset Separator plain
@@ -657,10 +722,21 @@ Konvergenzbeschleunigung
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
+\begin_layout FrameSubtitle
 Der Satz von Ostrowski und Reich
 \end_layout
 
+\begin_layout Theorem
+
+\lang ngerman
+Das SOR-Verfahren konvergiert für positiv definitive symmetrische Matrizen
+ genau dann wenn 
+\begin_inset Formula $\omega\in\left]0,2\right[$
+\end_inset
+
+.
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 \begin_inset Separator plain
@@ -683,8 +759,61 @@ Konvergenzbeschleunigung
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
+\begin_layout FrameSubtitle
 Tschebyscheff-Beschleunigung
+\end_layout
+
+\begin_layout Itemize
+Idee: Konvergenzbeschleunigung durch Linearkombination der bisherigen Iteratione
+n 
+\begin_inset Formula $y_{k}={\displaystyle \sum_{i=0}^{k}}\alpha_{ki}x_{k}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Minimiere Fehler 
+\begin_inset Formula $y_{k}-\hat{x}:=d_{k}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Stelle 
+\begin_inset Formula $d_{k}$
+\end_inset
+
+ dar als 
+\begin_inset Formula $P_{k}\left(M\right)d_{0}$
+\end_inset
+
+ mit 
+\begin_inset Formula $P_{K}\left(M\right)$
+\end_inset
+
+ Matrixpolynom.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Minimiere 
+\begin_inset Formula $\interleave P_{k}\left(M\right)\interleave_{2}$
+\end_inset
+
+ mit Hilfe der Theorie der Tschebyscheff-Polynome.
 \end_layout
 
 \end_deeper
@@ -708,6 +837,58 @@ Implementierung und Vergleich
 
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+
+\lang ngerman
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+tiny{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\begin{pmatrix}2 & -1 & 0\\
+-1 & 2 & -1\\
+0 & -1 & 2
+\end{pmatrix}x=\begin{pmatrix}19\\
+45\\
+0
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename experimental_results.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
 \begin_layout Standard
 \begin_inset Separator plain
 \end_inset

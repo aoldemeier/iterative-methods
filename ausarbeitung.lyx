@@ -1639,6 +1639,16 @@ Das Gauß-Seidel-Verfahren konvergiert für alle strikt diagonaldominanten
 \begin_inset Formula $A\in\mathbb{C}^{n\times n}$
 \end_inset
 
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Sicher auch C
+\end_layout
+
+\end_inset
+
 .
 \begin_inset ERT
 status open
@@ -2513,7 +2523,7 @@ hspace*{-0.6cm}
 
 
 \begin_inset Graphics
-	filename combined.png
+	filename experimental_results.png
 	scale 41
 
 \end_inset
