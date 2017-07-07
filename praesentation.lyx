@@ -206,6 +206,7 @@ Fixpunktgleichung
 
 \begin_deeper
 \begin_layout Itemize
+Fixpunktgleichung: 
 \begin_inset Formula $x=\left(I_{n}-B^{-1}A\right)x+B^{-1}b$
 \end_inset
 
@@ -217,7 +218,7 @@ Fixpunktgleichung
 \end_layout
 
 \begin_layout Itemize
-Fixpunktgleichung: 
+Fixpunktiteration: 
 \begin_inset Formula $x_{k+1}:=Mx_{k}+c$
 \end_inset
 
@@ -735,6 +736,34 @@ Das SOR-Verfahren konvergiert für positiv definitive symmetrische Matrizen
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+
+\lang ngerman
+Problem: Finde optimales 
+\begin_inset Formula $\omega$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+
+\lang ngerman
+Zur Lösung des Problems muss man die Eigenwerte von 
+\begin_inset Formula $M_{SOR}$
+\end_inset
+
+ kennen.
 \end_layout
 
 \end_deeper
