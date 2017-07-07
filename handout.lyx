@@ -1,0 +1,473 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{amsthm}
+\newtheorem{theorem}{Satz}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Beispiel}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Korollar}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language ngerman
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 0cm
+\rightmargin 2.5cm
+\bottommargin 1.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language german
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Jacobi, Gauß-Seidel und SOR
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagenumbering{gobble}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Alexander Oldemeier
+\end_layout
+
+\begin_layout Section
+Splitting-Verfahren, Fixpunktform
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\small$
+\end_inset
+
+Gesucht ist die Lösung des LGS 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+, 
+\begin_inset Formula $A$
+\end_inset
+
+ invertierbar.
+ Wähle hierzu eine invertierbare Matrix 
+\begin_inset Formula $B$
+\end_inset
+
+, bringe das LGS mit Hilfe des 
+\begin_inset Quotes gld
+\end_inset
+
+Splits
+\begin_inset Quotes grd
+\end_inset
+
+ 
+\begin_inset Formula $A=B+\left(A-B\right)$
+\end_inset
+
+ auf Fixpunktform und betrachte die dazu gehörige Fixpunktiteration:
+\begin_inset Formula 
+\[
+x_{k+1}=\underset{:=M}{\left(I_{n}-B^{-1}A\right)}x_{k}+\underset{:=c}{B^{-1}b}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Man kann zeigen, dass die Fixpunktiteration genau dann gegen die Lösung
+ 
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+ konvergiert, wenn 
+\begin_inset Formula $\rho\left(M\right)<1$
+\end_inset
+
+.
+ Der Spektralradius bestimmt auch die Konvergenzgeschwindigkeit: 
+\begin_inset Formula 
+\[
+\rho\left(M\right)=\alpha:=\underset{x_{0}}{\sup\:}\underset{k\rightarrow\infty}{\limsup}\left(\Vert x^{k}-\hat{x}\Vert\right)^{\frac{1}{k}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Jacobi, Gauß-Seidel und SOR
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+A=\underset{:=D}{\begin{pmatrix}a_{11} & 0 & \ldots & 0\\
+0 & \ddots & 0 & \vdots\\
+\vdots & 0 & \ddots & \vdots\\
+0 & \cdots & \cdots & a_{nn}
+\end{pmatrix}}-\underset{:=L}{\begin{pmatrix}0 & 0 & \ldots & 0\\
+-a_{21} & \ddots & 0 & \vdots\\
+\vdots & \ddots & \ddots & \vdots\\
+-a_{n1} & -a_{n2} & \cdots & 0
+\end{pmatrix}}-\underset{:=R}{\begin{pmatrix}-a_{11} & -a_{12} & \ldots- & a_{1n}\\
+0 & \ddots & \ddots & -a_{2n}\\
+\vdots & 0 & \ddots & \vdots\\
+0 & \cdots & \cdots & 0
+\end{pmatrix}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features booktabs="true" islongtable="true" longtabularalignment="center">
+<column alignment="left" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Verfahren
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+B
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Iterationsformel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+konvergiert für
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Jacobi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $D$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x_{k+1}:=\underset{:=M_{J}}{D^{-1}\left(L+R\right)x_{k}}+\underset{:=c_{J}}{D^{-1}b}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A$
+\end_inset
+
+ idd, 
+\begin_inset Formula $A$
+\end_inset
+
+ spd
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gauß-Seidel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $D-L$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x_{k+1}=\underset{:=M_{GS}}{\left(D-L\right)^{-1}R}x_{k}+\underset{:=c_{GS}}{\left(D-L\right)^{-1}b}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A$
+\end_inset
+
+ idd, 
+\begin_inset Formula $A$
+\end_inset
+
+ spd
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SOR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{1}{\omega}D-L$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x_{k+1}=\underset{:=M_{SOR}}{\left(D-\omega L\right)^{-1}\left[\left(1-\omega\right)D+\omega R\right]}x_{k}+\underset{:=c_{SOR}}{\omega\left(D-L\right)^{-1}b}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A$
+\end_inset
+
+ spd, 
+\begin_inset Formula $\omega\in\left]0,2\right[$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es gilt 
+\begin_inset Formula $\rho\left(M_{GS}\right)=\rho\left(M_{J}\right)^{2}$
+\end_inset
+
+.
+ SOR konvergiert mit gut gewähltem 
+\begin_inset Formula $\omega$
+\end_inset
+
+ noch schneller als Gauß-Seidel.
+\end_layout
+
+\begin_layout Section
+Vergleich für eine zufällig gewählte spd-Matrix
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename experimental_results.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Der Code befindet sich auf Github: https://github.com/aoldemeier/iterative-method
+s
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+tiny
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand nocite
+key "H-B09,Kan05,DH08"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "math_lit"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

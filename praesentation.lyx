@@ -222,7 +222,59 @@ Fixpunktiteration:
 \begin_inset Formula $x_{k+1}:=Mx_{k}+c$
 \end_inset
 
+ mit 
+\begin_inset Formula $M:=\left(I_{n}-B^{-1}A\right)$
+\end_inset
 
+, 
+\begin_inset Formula $c:=B^{-1}b$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Splitting-Verfahren
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Wir werden sehen: Unter gewissen Bedingungen konvergiert die Fixpunktiteration
+ gegen die Lösung des LGS.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Numerische Verfahren dieser Art nennt man Splitting-Verfahren.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Iterative Verfahren vs.
+ direkte Verfahren.
 \end_layout
 
 \end_deeper
@@ -432,7 +484,7 @@ Für das Fixpunktverfahren mit Iterationsmatrix
  gilt: 
 \begin_inset Formula 
 \[
-\rho\left(M\right)=\alpha:=\underset{x_{0}\neq\hat{x}}{\sup}\underset{k\rightarrow\infty}{\limsup}\left(\Vert x^{k}-\hat{x}\Vert\right)^{\frac{1}{k}}
+\rho\left(M\right)=\alpha:=\underset{x_{0}}{\sup}\underset{k\rightarrow\infty}{\:\limsup}\left(\Vert x^{k}-\hat{x}\Vert\right)^{\frac{1}{k}}
 \]
 
 \end_inset
@@ -516,6 +568,10 @@ status open
 
 \begin_layout Itemize
 Jacobi-Verfahren: 
+\begin_inset Formula $B=D$
+\end_inset
+
+, 
 \begin_inset Formula $x_{k+1}:=\underset{:=M_{J}}{D^{-1}\left(L+R\right)x_{k}}+\underset{:=c_{J}}{D^{-1}b}$
 \end_inset
 
@@ -612,6 +668,10 @@ Idee: Konvergenzbeschleunigung durch Verwendung der neuen Werte:
 
 \begin_layout Itemize
 Gauß-Seidel: 
+\begin_inset Formula $B=D-L$
+\end_inset
+
+, 
 \begin_inset Formula $x_{k+1}=\underset{:=M_{GS}}{\left(D-L\right)^{-1}R}x_{k}+\underset{:=c_{GS}}{\left(D-L\right)^{-1}b}$
 \end_inset
 
@@ -695,6 +755,10 @@ Idee: Konvergenzbeschleunigung durch Gewichtung der neuen Werte:
 
 \begin_layout Itemize
 SOR: 
+\begin_inset Formula $B=\frac{1}{\omega}D-L$
+\end_inset
+
+, 
 \begin_inset Formula $x_{k+1}=\underset{:=M_{SOR}}{\left(D-\omega L\right)^{-1}\left[\left(1-\omega\right)D+\omega R\right]}x_{k}+\underset{:=c_{SOR}}{\omega\left(D-L\right)^{-1}b}$
 \end_inset
 
